@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+
+  database:
+    container_name: db-tools
+    # actency/docker-mysql available tags: latest, 5.7, 5.6, 5.5
+    image: bitnami/mariadb
+    ports:
+      - "3333:3306"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_DATABASE=ccfound
+      - MARIADB_USER=test
+      - MARIADB_PASSWORD=1234
+      - MARIADB_ROOT_PASSWORD=4567
+    volumes:
+    - mysql-data-proxy-mf:/var/lib/mysql
+
+  cloudsql:
+    container_name: sqlCloud-tools
+    image: gcr.io/cloudsql-docker/gce-proxy:1.11
+    command: /cloud_sql_proxy -instances=ccfound-vpc-host-dev:europe-west3:dev-sql-mf=tcp:0.0.0.0:3306 -credential_file=/secrets/cloudsql/ccfound-vpc-host-dev-b95265f14f98.json
+    volumes:
+      - ./credential:/secrets/cloudsql
+    ports:
+      - 4446:3306
+    expose:
+      - "5000"
+
+  mailtrap:
+    container_name: mailtrap-tools
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - 1030:1025 # smtp server
+      - 8035:8025 # web ui
+
+  redis:
+    image: bitnami/redis:5.0.12-debian-10-r91
+    container_name: redis-tools
+    ports:
+      - 7004:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  rabbitmq:
+    image: bitnami/rabbitmq
+    container_name: rabbitmq-tools
+    environment:
+      - RABBITMQ_ERL_COOKIE=s3cr3tc00ki3
+      - RABBITMQ_PASSWORD=1234
+      - RABBITMQ_USERNAME=test
+    ports:
+      - '15672:15672'
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: mf-net
+
+volumes:
+  mysql-data-proxy-mf:
