@@ -57,6 +57,14 @@ services:
     networks:
       - default
 
+  pointainer:
+    image: portainer/portainer:alpine
+    container_name: portainer-tools
+    ports:
+    - "9006:9000"
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
 networks:
   default:
     external:
