@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pointainer
+  name: pointainer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: pointainer
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/mf-net: "true"
+        io.kompose.service: pointainer
+    spec:
+      containers:
+        - image: portainer/portainer:alpine
+          name: portainer-tools
+          ports:
+            - containerPort: 9000
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: pointainer-claim0
+      restartPolicy: Always
+      volumes:
+        - name: pointainer-claim0
+          persistentVolumeClaim:
+            claimName: pointainer-claim0
+status: {}

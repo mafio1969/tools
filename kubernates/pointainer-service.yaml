@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pointainer
+  name: pointainer
+spec:
+  ports:
+    - name: "9006"
+      port: 9006
+      targetPort: 9000
+  selector:
+    io.kompose.service: pointainer
+status:
+  loadBalancer: {}

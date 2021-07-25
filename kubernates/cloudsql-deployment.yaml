@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cloudsql
+  name: cloudsql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cloudsql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/mf-net: "true"
+        io.kompose.service: cloudsql
+    spec:
+      containers:
+        - args:
+            - /cloud_sql_proxy
+            - -instances=ccfound-vpc-host-dev:europe-west3:dev-sql-mf=tcp:0.0.0.0:3306
+            - -credential_file=/secrets/cloudsql/ccfound-vpc-host-dev-b95265f14f98.json
+          image: gcr.io/cloudsql-docker/gce-proxy:1.11
+          name: sqlcloud-tools
+          ports:
+            - containerPort: 3306
+            - containerPort: 5000
+          resources: {}
+          volumeMounts:
+            - mountPath: /secrets/cloudsql
+              name: cloudsql-claim0
+      restartPolicy: Always
+      volumes:
+        - name: cloudsql-claim0
+          persistentVolumeClaim:
+            claimName: cloudsql-claim0
+status: {}

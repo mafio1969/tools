@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: database
+  name: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/mf-net: "true"
+        io.kompose.service: database
+    spec:
+      containers:
+        - env:
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
+            - name: MARIADB_DATABASE
+              value: ccfound
+            - name: MARIADB_PASSWORD
+              value: "1234"
+            - name: MARIADB_ROOT_PASSWORD
+              value: "4567"
+            - name: MARIADB_USER
+              value: test
+          image: bitnami/mariadb
+          name: db-tools
+          ports:
+            - containerPort: 3306
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-data-proxy-mf
+      restartPolicy: Always
+      volumes:
+        - name: mysql-data-proxy-mf
+          persistentVolumeClaim:
+            claimName: mysql-data-proxy-mf
+status: {}
