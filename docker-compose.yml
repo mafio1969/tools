@@ -17,10 +17,10 @@ services:
     volumes:
     - mysql-data-proxy-mf:/var/lib/mysql
 
-  cloudsql:
+  cloud-sql-proxy:
     container_name: sqlCloud-tools
-    image: gcr.io/cloudsql-docker/gce-proxy:1.11
-    command: /cloud_sql_proxy -instances=ccfound-vpc-host-dev:europe-west3:dev-sql-mf=tcp:0.0.0.0:3306 -credential_file=/secrets/cloudsql/ccfound-vpc-host-dev-b95265f14f98.json
+    image: gcr.io/cloudsql-docker/gce-proxy:latest
+    command: /cloud_sql_proxy -instances=ccfound-vpc-host-dev:europe-west3:dev-sql-mf=tcp:0.0.0.0:3306 -credential_file=/secrets/cloudsql/ccfound-vpc-host-dev-83e9fae6f28d.json
     volumes:
       - ./credential:/secrets/cloudsql
     ports:
